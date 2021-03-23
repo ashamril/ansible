@@ -1,0 +1,50 @@
+# Find out if an RPM is installed on hosts
+- name: Find out if RPM is installed
+  hosts: "{{ host }}"
+  become: yes
+
+  vars_prompt:
+    - name: "rpm_package"
+      prompt: "Enter the RPM package name"
+      private: no
+
+  vars:
+      print_information: true
+
+  tasks:
+    - name: OS version
+      debug: 
+        msg:
+        - "{{ hostvars[inventory_hostname].ansible_distribution }} {{ hostvars[inventory_hostname].ansible_distribution_version }}"
+#        - "{{ hostvars[inventory_hostname].ansible_distribution_version }}"
+
+
+#    - name: yum_command
+#      yum:
+#        list=installed
+#      register: yum_packages
+#    - debug: var=item
+#      with_items: "{{yum_packages|json_query(jsonquery)}}"
+#      vars:
+#        jsonquery: "results[?name=='{{ rpm_package }}']"
+ 
+    - name: Gather all the rpm packages
+      package_facts:
+        manager: auto
+
+    - name: Check if the package is already installed
+      debug:
+# print all info of the package
+        var: ansible_facts.packages["{{ rpm_package }}"]
+# print the package version only
+#        var: ansible_facts.packages["{{ rpm_package }}"][0].version
+
+#   - name: using command module to install the package
+#     command: yum install <package_name> -y
+#     when: "'package' not in ansible_facts.packages"
+#     register: install_res
+
+#   - name: whether package is installed now
+#     debug:
+#       var: install_res
+

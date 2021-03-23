@@ -1,0 +1,25 @@
+- name: Check security updates
+  hosts: "{{ host }}"
+  
+  tasks:
+  - name: Checking updates
+
+    yum: 
+      list: updates
+      update_cache: true
+      security: yes
+      bugfix: no
+    register: yumoutput
+
+
+  - name: Checking updates
+    yum:
+      security: yes
+      state: latest
+    check_mode: yes
+    register: yum_output
+    become: true
+
+  - name: show that yum output
+    debug:
+      var: yum_output
